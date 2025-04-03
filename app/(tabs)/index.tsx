@@ -54,7 +54,7 @@ export default function HomeScreen() {
       <View style={styles.innerContainer}>
         {gameOver && <Text style={styles.gameOverText}>Game Over</Text>}
 
-        <View style={styles.contentContainer}>
+        <View>
           <View style={styles.headerContainer}>
             <View style={styles.headerButton}>1</View>
             <View style={styles.headerButton}>1</View>
