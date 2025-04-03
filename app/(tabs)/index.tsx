@@ -3,7 +3,7 @@ import { useState } from 'react'
 
 export default function HomeScreen() {
   const RealMap = '1 x 1 1 x 1 2 2 2 1 2 2 2 x 2 0 1 x 2 x 2 1 2 2 1 1 1 1 x 1 0 0 0 1 1 1'
-  const map = '? ? ? ? ? ? ? ? ? ? ? ? ? ? ? 0 ? ? ? ? ? ? ? ? ? ? ? ? ? ? 0 0 0 ? ? ?'
+  const map = '? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ?'
   const n = 6
 
   const [layout, setLayout] = useState(() => {
@@ -40,8 +40,10 @@ export default function HomeScreen() {
             {item.map((value: string, rowIndex: number) => (
               <View key={rowIndex} style={styles.buttonContainer}>
                 <TouchableOpacity
-                  style={[styles.button, { backgroundColor: value === '0' ? 'green' : 'gray' }]}
-                  disabled={value === '0'}
+                  style={[
+                    styles.button,
+                    { backgroundColor: value === 'x' ? 'red' : value !== '?' ? 'green' : 'gray' }
+                  ]}
                   key={rowIndex}
                   onPress={() => {
                     open(rowIndex, columnIndex)
