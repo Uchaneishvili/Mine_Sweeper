@@ -1,16 +1,28 @@
-import { StyleSheet, View, TouchableOpacity, Text } from 'react-native'
+import {
+  StyleSheet,
+  View,
+  TouchableOpacity,
+  Text,
+  ScrollView,
+  Dimensions,
+  SafeAreaView
+} from 'react-native'
 import { useEffect, useState } from 'react'
 import { HappyEmoji, SadEmoji } from '@/components/ui/Icons'
 import FormatData from '@/utils/FormatData'
 export default function HomeScreen() {
-  const RealMap = '1 x 1 1 x 1 2 2 2 1 2 2 2 x 2 0 1 x 2 x 2 1 2 2 1 1 1 1 x 1 0 0 0 1 1 1'
-  const map = '? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ?'
-  const n = 6
+  const RealMap =
+    '1 x 1 1 x 1 2 2 2 1 2 2 1 x 1 1 x 1 2 2 2 1 2 2 2 x 2 0 1 x 2 x 2 1 2 2 1 1 1 1 x 1 0 0 0 1 1 1'
+  const map =
+    '? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ?'
+  const screenWidth = Dimensions.get('window').width
+  // Adjust grid size for very small screens
+  const n = screenWidth < 350 ? 5 : 6
 
   const buttonValue = {
     x: '💣',
     '?': ' ',
-    '0': '0',
+    '0': ' ',
     '1': '1',
     '2': '2'
   }
@@ -63,71 +75,118 @@ export default function HomeScreen() {
     }
   }
 
+  // Get screen dimensions
+  const buttonSize = Math.min(35, (screenWidth - 60) / n) // Adaptive button size based on screen width
+
   return (
-    <View style={styles.container}>
-      <View style={styles.innerContainer}>
-        {gameOver && <Text style={styles.gameOverText}>Game Over</Text>}
+    <SafeAreaView style={{ flex: 1 }}>
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <View style={styles.container}>
+          <View style={styles.innerContainer}>
+            <View style={styles.gameContainer}>
+              <View style={styles.headerContainer}>
+                <View style={styles.headerButton}>
+                  <Text>{FormatData.formatDigits(timer)}</Text>
+                </View>
 
-        <View>
-          <View style={styles.headerContainer}>
-            <View style={styles.headerButton}>{FormatData.formatDigits(timer)}</View>
-            <View style={styles.headerButton}>{gameOver ? <SadEmoji /> : <HappyEmoji />}</View>
-            <View style={styles.headerButton}>{FormatData.formatDigits(score)}</View>
-          </View>
+                <View style={styles.headerButton}>{gameOver ? <SadEmoji /> : <HappyEmoji />}</View>
+                <View style={styles.headerButton}>
+                  <Text>{FormatData.formatDigits(score)}</Text>
+                </View>
+              </View>
 
-          {layout.map((item: string[], columnIndex: number) => (
-            <View key={columnIndex} style={styles.innerView}>
-              <View style={styles.row}>
-                {item.map((value: string, rowIndex: number) => (
-                  <View key={rowIndex} style={styles.buttonContainer}>
-                    <TouchableOpacity
-                      style={[
-                        styles.button,
-                        {
-                          backgroundColor: value === 'x' ? 'red' : value !== '?' ? 'green' : 'gray'
-                        }
-                      ]}
-                      key={rowIndex}
-                      disabled={value !== '?'}
-                      onPress={() => {
-                        open(rowIndex, columnIndex)
-                      }}
-                    >
-                      <Text style={styles.buttonText}>
-                        {buttonValue[value as keyof typeof buttonValue]}
-                      </Text>
-                    </TouchableOpacity>
+              <View style={styles.layoutContainer}>
+                {layout.map((item: string[], columnIndex: number) => (
+                  <View key={columnIndex} style={styles.innerView}>
+                    <View style={styles.row}>
+                      {item.map((value: string, rowIndex: number) => (
+                        <View key={rowIndex} style={styles.buttonContainer}>
+                          <TouchableOpacity
+                            style={[
+                              styles.button,
+                              {
+                                width: buttonSize,
+                                height: buttonSize,
+                                backgroundColor:
+                                  value === 'x' ? 'red' : value !== '?' ? 'green' : '#BDBDBD'
+                              }
+                            ]}
+                            key={rowIndex}
+                            disabled={value !== '?'}
+                            onPress={() => {
+                              open(rowIndex, columnIndex)
+                            }}
+                          >
+                            <Text style={[styles.buttonText, { fontSize: buttonSize * 0.5 }]}>
+                              {buttonValue[value as keyof typeof buttonValue]}
+                            </Text>
+                          </TouchableOpacity>
+                        </View>
+                      ))}
+                    </View>
                   </View>
                 ))}
               </View>
+              {gameOver && <Text style={styles.gameOverText}>Game Over</Text>}
             </View>
-          ))}
+          </View>
         </View>
-      </View>
-    </View>
+      </ScrollView>
+    </SafeAreaView>
   )
 }
 
 const styles = StyleSheet.create({
+  scrollContainer: {
+    flexGrow: 1,
+    justifyContent: 'center'
+  },
   container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '100%',
-    height: '100%'
+    flex: 1
+    // justifyContent: 'center',
+    // alignItems: 'center'
+    // width: '100%',
+    // height: '100%',
+    // backgroundColor: '#BDBDBD'
   },
   innerContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center'
+    flex: 1
+    // marginTop: 40
+    // justifyContent: 'center',
+    // alignItems: 'center'
   },
   innerView: {
-    backgroundColor: 'gray'
+    backgroundColor: '#BDBDBD'
+  },
+
+  gameContainer: {
+    height: '100%',
+    width: '100%',
+    backgroundColor: '#BDBDBD',
+    padding: 10,
+    borderWidth: 5,
+    borderLeftColor: 'white',
+    borderRightColor: 'black',
+    borderTopColor: 'white',
+    borderBottomColor: 'black'
+  },
+
+  layoutContainer: {
+    height: '100%',
+    width: '100%',
+    backgroundColor: '#BDBDBD',
+    borderWidth: 5,
+    marginTop: 10,
+    borderLeftColor: 'black',
+    borderRightColor: 'white',
+    borderTopColor: 'black',
+    borderBottomColor: 'white',
+    paddingTop: 10
   },
   buttonContainer: {
-    margin: 2,
-    justifyContent: 'center',
-    alignItems: 'center'
+    width: `${100 / 6}%`,
+    padding: 10
+    // padding: 20
   },
   button: {
     width: 40,
@@ -146,7 +205,6 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   buttonText: {
-    fontSize: 24,
     fontWeight: 'bold',
     color: 'white'
   },
@@ -156,10 +214,11 @@ const styles = StyleSheet.create({
     color: 'red'
   },
   headerContainer: {
+    marginTop: 30,
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'gray',
+    backgroundColor: '#BDBDBD',
     justifyContent: 'space-between',
     textAlign: 'center',
     borderWidth: 5,
@@ -169,9 +228,9 @@ const styles = StyleSheet.create({
     borderBottomColor: 'white'
   },
   headerButton: {
-    width: 85,
-    height: 88,
-    backgroundColor: 'gray',
+    width: 100,
+    height: 200,
+    backgroundColor: '#BDBDBD',
     justifyContent: 'center'
   }
 })
