@@ -1,6 +1,7 @@
 import { StyleSheet, View, TouchableOpacity, Text } from 'react-native'
-import { useState } from 'react'
-
+import { useEffect, useState } from 'react'
+import { HappyEmoji, SadEmoji } from '@/components/ui/Icons'
+import FormatData from '@/utils/FormatData'
 export default function HomeScreen() {
   const RealMap = '1 x 1 1 x 1 2 2 2 1 2 2 2 x 2 0 1 x 2 x 2 1 2 2 1 1 1 1 x 1 0 0 0 1 1 1'
   const map = '? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ? ?'
@@ -15,6 +16,8 @@ export default function HomeScreen() {
   }
 
   const [gameOver, setGameOver] = useState(false)
+  const [score, setScore] = useState(0)
+  const [timer, setTimer] = useState(0)
   const [layout, setLayout] = useState(() => {
     const mapArray = map.split(' ')
     const initialLayout: string[][] = []
@@ -31,6 +34,16 @@ export default function HomeScreen() {
     return initialLayout
   })
 
+  useEffect(() => {
+    if (!gameOver) {
+      const interval = setInterval(() => {
+        setTimer((timer) => timer + 1)
+      }, 1000)
+
+      return () => clearInterval(interval)
+    }
+  }, [gameOver])
+
   const realMapArray = RealMap.split(' ')
 
   const open = (row: number, column: number) => {
@@ -44,6 +57,7 @@ export default function HomeScreen() {
 
       setLayout(revealedLayout)
     } else {
+      setScore((score) => score + 5)
       newLayout[column][row] = realMapArray[column * n + row]
       setLayout(newLayout)
     }
@@ -56,9 +70,9 @@ export default function HomeScreen() {
 
         <View>
           <View style={styles.headerContainer}>
-            <View style={styles.headerButton}>1</View>
-            <View style={styles.headerButton}>1</View>
-            <View style={styles.headerButton}>1</View>
+            <View style={styles.headerButton}>{FormatData.formatDigits(timer)}</View>
+            <View style={styles.headerButton}>{gameOver ? <SadEmoji /> : <HappyEmoji />}</View>
+            <View style={styles.headerButton}>{FormatData.formatDigits(score)}</View>
           </View>
 
           {layout.map((item: string[], columnIndex: number) => (
